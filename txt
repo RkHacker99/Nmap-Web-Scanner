@@ -1,0 +1,44 @@
+import socket
+import threading
+
+def scan_port(target, port):
+  """
+  Scans a single port on the target host.
+
+  Args:
+    target: The IP address or hostname of the target host.
+    port: The port number to scan.
+
+  Returns:
+    True if the port is open, False otherwise.
+  """
+  try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(0.5)
+    s.connect((target, port))
+    s.close()
+    return True
+  except:
+    return False
+
+def scan_ports(target, start_port, end_port):
+  """
+  Scans a range of ports on the target host using multiple threads.
+
+  Args:
+    target: The IP address or hostname of the target host.
+    start_port: The starting port number.
+    end_port: The ending port number.
+  """
+  print(f"Scanning {target} from port {start_port} to {end_port}")
+  for port in range(start_port, end_port + 1):
+    thread = threading.Thread(target=scan_port, args=(target, port))
+    thread.start()
+    if scan_port(target, port):
+      print(f"Port {port} is open")
+
+if __name__ == "__main__":
+  target = input("Enter target IP address or hostname: ")
+  start_port = int(input("Enter starting port: "))
+  end_port = int(input("Enter ending port: "))
+  scan_ports(target, start_port, end_port)
